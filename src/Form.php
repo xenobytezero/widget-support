@@ -37,7 +37,6 @@ class Form {
 
     // --------------------------------------------------------------------
 
-
     public static function render_form_checkbox($widget, $field_id, $field_title, $opts) {
 
         $context = [
@@ -51,6 +50,21 @@ class Form {
         
     }
 
+    // --------------------------------------------------------------------
+
+    public static function render_form_select($widget, $field_id, $field_title, $opts, $select_opts) {
+
+        $context = [
+            'field_id' => $widget->get_field_id($field_id),
+            'field_name' => $widget->get_field_name($field_id),
+            'field_title' => $field_title,
+            'val' => $opts[$field_id],
+            'opts' => $select_opts 
+        ];
+
+        \Timber\Timber::render('templates\select.twig', $context);
+        
+    }
 
     // --------------------------------------------------------------------
 

@@ -1,0 +1,22 @@
+<p>
+
+    <label for="{{field_id}}">{{field_title}}</label> 
+    <select 
+        class="widefat"
+        id="{{field_id}}" 
+        name="{{field_name}}"
+    >
+        {% for opt in opts %}
+
+            <option 
+                value="{{opt.value}}"
+                {% if opt.value is same as(val) %}selected{% endif %}
+            >
+                {{opt.name}}
+            </option>
+
+        {% endfor %}
+
+    </select>
+
+</p>
