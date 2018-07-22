@@ -1,0 +1,10 @@
+{
+    "name": "xenobytezero/widget-support",
+    "type": "library",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "WidgetSupport\\": "src/"
+        }
+    }
+}
