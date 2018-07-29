@@ -9,22 +9,26 @@ class Encryption {
 
     function __construct($enc_file_path, $enc_key_id) {
 
-        this::$enc_key_id = $enc_key_id;
-        this::$enc_file_path = $enc_file_path;
+        $this->enc_key_id = $enc_key_id;
+        $this->enc_file_path = $enc_file_path . '/enc_key.php';
+
+        if (!file_exists($this->enc_file_path)) {
+            $this->create_encryption_key();
+        }
 
     }
 
-    public static function init_encryption_key() {
+    function init_encryption_key() {
         // include the enc file
-        require_once(this::$enc_file_path);
+        require_once($this->enc_file_path);
     }
 
-    public static function enc($data){
+    public function enc($data){
         
         // Initialise the key if required
-        this::init_encryption_key();
+        $this->init_encryption_key();
         // Remove the base64 encoding from our key
-        $encryption_key = base64_decode(GBGI_ENC_KEY);
+        $encryption_key = base64_decode(constant($this->enc_key_id));
         // Generate an initialization vector
         $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
         // Encrypt the data using AES 256 encryption in CBC mode using our encryption key and initialization vector.
@@ -33,12 +37,12 @@ class Encryption {
         return base64_encode($encrypted . '::' . $iv);
     }
 
-    public static function dec($data){
+    public function dec($data){
 
         // Initialise the key if required
-        Common::init_encryption_key();
+        $this->init_encryption_key();
         // Remove the base64 encoding from our key
-        $encryption_key = base64_decode(this::$enc_key_id);
+        $encryption_key = base64_decode(constant($this->enc_key_id));
         // To decrypt, split the encrypted data from our IV - our unique separator used was "::"
         list($encrypted_data, $iv) = explode('::', base64_decode($data), 2);
 
@@ -46,17 +50,17 @@ class Encryption {
     }
 
     
-    public static function create_encryption_key() {
+    function create_encryption_key() {
 
         //create the file
-        $enc_file = fopen(this::$enc_file_path, "w") or die("Unable to create enc file");
+        $enc_file = fopen($this->enc_file_path, "w") or die("Unable to create enc file");
 
         // write the header
         fwrite($enc_file, "<?php defined( 'ABSPATH' ) or die;");
     
         // write the key
         $key = base64_encode(openssl_random_pseudo_bytes(32));
-        fwrite($enc_file, "define('" . this::$enc_key_id . "', '" . $key . "');");
+        fwrite($enc_file, "define('" . $this->enc_key_id . "', '" . $key . "');");
 
         // write the footer
         fwrite($enc_file, "?>");
@@ -69,13 +73,5 @@ class Encryption {
 
 
 }
-
-
-
-
-
-
-
-
 
 ?>
